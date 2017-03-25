@@ -8,22 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		DCFAA27D1E86680B00170327 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCFAA27C1E86680B00170327 /* AppDelegate.swift */; };
-		DCFAA27F1E86680B00170327 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCFAA27E1E86680B00170327 /* ViewController.swift */; };
 		DCFAA2821E86680B00170327 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCFAA2801E86680B00170327 /* Main.storyboard */; };
 		DCFAA2851E86680B00170327 /* PeticionServidorJerarquico.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DCFAA2831E86680B00170327 /* PeticionServidorJerarquico.xcdatamodeld */; };
 		DCFAA2871E86680B00170327 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCFAA2861E86680B00170327 /* Assets.xcassets */; };
 		DCFAA28A1E86680B00170327 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCFAA2881E86680B00170327 /* LaunchScreen.storyboard */; };
+		DCFAA2941E866A0000170327 /* TVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCFAA2931E866A0000170327 /* TVC.swift */; };
+		DCFAA2981E86729D00170327 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCFAA2971E86729D00170327 /* ViewController.swift */; };
+		DCFAA29B1E868BFE00170327 /* VistaDetalle.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCFAA29A1E868BFE00170327 /* VistaDetalle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		DCFAA2791E86680B00170327 /* PeticionServidorJerarquico.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeticionServidorJerarquico.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCFAA27C1E86680B00170327 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		DCFAA27E1E86680B00170327 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		DCFAA2811E86680B00170327 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DCFAA2841E86680B00170327 /* PeticionServidorJerarquico.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PeticionServidorJerarquico.xcdatamodel; sourceTree = "<group>"; };
 		DCFAA2861E86680B00170327 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DCFAA2891E86680B00170327 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DCFAA28B1E86680B00170327 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DCFAA2931E866A0000170327 /* TVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TVC.swift; sourceTree = "<group>"; };
+		DCFAA2971E86729D00170327 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		DCFAA29A1E868BFE00170327 /* VistaDetalle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VistaDetalle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,12 +61,14 @@
 			isa = PBXGroup;
 			children = (
 				DCFAA27C1E86680B00170327 /* AppDelegate.swift */,
-				DCFAA27E1E86680B00170327 /* ViewController.swift */,
 				DCFAA2801E86680B00170327 /* Main.storyboard */,
 				DCFAA2861E86680B00170327 /* Assets.xcassets */,
 				DCFAA2881E86680B00170327 /* LaunchScreen.storyboard */,
 				DCFAA28B1E86680B00170327 /* Info.plist */,
 				DCFAA2831E86680B00170327 /* PeticionServidorJerarquico.xcdatamodeld */,
+				DCFAA2931E866A0000170327 /* TVC.swift */,
+				DCFAA2971E86729D00170327 /* ViewController.swift */,
+				DCFAA29A1E868BFE00170327 /* VistaDetalle.swift */,
 			);
 			path = PeticionServidorJerarquico;
 			sourceTree = "<group>";
@@ -139,9 +145,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DCFAA27F1E86680B00170327 /* ViewController.swift in Sources */,
 				DCFAA27D1E86680B00170327 /* AppDelegate.swift in Sources */,
+				DCFAA2941E866A0000170327 /* TVC.swift in Sources */,
+				DCFAA2981E86729D00170327 /* ViewController.swift in Sources */,
 				DCFAA2851E86680B00170327 /* PeticionServidorJerarquico.xcdatamodeld in Sources */,
+				DCFAA29B1E868BFE00170327 /* VistaDetalle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
