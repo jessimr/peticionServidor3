@@ -7,23 +7,38 @@
 //
 
 import UIKit
+import CoreData
 
-class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITextFieldDelegate{
 
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var titulo: UILabel!
-    @IBOutlet weak var listaAutores: UITableView!
     @IBOutlet weak var portadaLibro: UIImageView!
+    @IBOutlet weak var autoresLibro: UILabel!
 
     
-    var names: [String] = []
+    /*var names: [String] = []
     var arrayLibros: [datosLibro] = []
-    var aux: datosLibro = datosLibro()
+    var aux: datosLibro = datosLibro()*/
+    
+    var contexto: NSManagedObjectContext? = nil
+    var nombre: String = ""
+    var escritores: String = ""
+    var portada: UIImage? = nil
+    var isbnLibro: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         textField.returnKeyType = UIReturnKeyType.search
+        
+        
+        //Inicializa contexto
+        guard let appDelegate =
+            UIApplication.shared.delegate as? AppDelegate else {
+                return
+        }
+        contexto = appDelegate.persistentContainer.viewContext
         
 
         // Do any additional setup after loading the view.
@@ -51,11 +66,13 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate
                 print(json)
                 
                 if let isbn = json["ISBN:\(self.textField.text!)"] as? [String : AnyObject]{
-                    aux.isbn = self.textField.text!
+                    //aux.isbn = self.textField.text!
+                    isbnLibro = self.textField.text!
                     if let titulo = isbn["title"] as? String {
-                        print(titulo)
+                        //print(titulo)
                         self.titulo.text = titulo as! String?
-                        aux.titulo = self.titulo.text!
+                        //aux.titulo = self.titulo.text!
+                        nombre = self.titulo.text!
                     }
                     
                     if let autores = isbn["authors"] {
@@ -63,12 +80,15 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate
                             
                             let nombre = autores[index] as! [String : AnyObject]
                             
-                            names.append(nombre["name"] as! String)
+                            //names.append(nombre["name"] as! String)
+                            let name = nombre["name"] as! String
+                            escritores = escritores + " " + name
                             
                         }
-                        self.listaAutores.reloadData()
-                        aux.autores = names
-                        print (names)
+                        self.autoresLibro.text = escritores
+                        //self.listaAutores.reloadData()
+                        //aux.autores = names
+                        //print (names)
                         
                     }
                     if let portada = isbn["cover"] as? [String : AnyObject] {
@@ -76,12 +96,13 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate
                             let urlImagen = URL(string: imagen)
                             let dataImagen = try? Data(contentsOf: urlImagen!)
                             portadaLibro.image = UIImage(data: dataImagen!)
-                            print (imagen)
+                            //print (imagen)
                         }
                     }else{
                         portadaLibro.image = nil
                     }
-                    aux.portada = portadaLibro.image
+                    //aux.portada = portadaLibro.image
+                    portada = portadaLibro.image
                 }
                 
             }
@@ -104,22 +125,50 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate
     //Acciones al pulsar buscar (Esconder teclado cuando se da a intro y buscar libro)
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
+        //---->Consulta de la base de datos (si ya se ha busacado que no se vuelva a buscar)
+        print ("----------Consulta de la base de datos---------")
+        let libroEntidad = NSEntityDescription.entity(forEntityName: "Libro", in: self.contexto!)
+        let peticion = libroEntidad?.managedObjectModel.fetchRequestFromTemplate(withName: "petLibro", substitutionVariables: ["isbn": textField.text!])
+        do{
+            let librosEntidad = try (self.contexto?.fetch(peticion!))! as! [Libro]
+            if(librosEntidad.count > 0){ //Para evitar hacer búsquedas innecesarias
+                print ("----------Para evitar hacer búsquedas innecesarias---------")
+                textField.text = nil
+                
+                //Mostrar alerta 
+                let alerta = UIAlertController(title: "Libro repetido", message: "El libro que busca ya está incluido en su lista", preferredStyle: .alert)
+                let continueAccion = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                alerta.addAction(continueAccion)
+                self.present(alerta, animated: true, completion: nil)
+                
+                return true
+            }
+        }catch{
+            
+        }
+        
+        //Si llegamos a este punto es que es la primera vez que vamos a realizar la búsqueda
+        print ("---------- primera vez que vamos a realizar la búsqueda---------")
         let texto = textField.text
         self.sincrono(texto: texto!)
+        
+        //---->Almacenamos la búsqueda en la base de datos (en caso de que sea la primera vez que se busca)
+        print ("---------- Almacenamos la búsqueda en la base de datos---------")
+        let nuevoLibroEntidad = NSEntityDescription.insertNewObject(forEntityName: "Libro", into: self.contexto!)
+        nuevoLibroEntidad.setValue(isbnLibro, forKey: "isbn")
+        nuevoLibroEntidad.setValue(nombre, forKey: "titulo")
+        nuevoLibroEntidad.setValue(escritores, forKey: "autores")
+        if portada != nil {
+            nuevoLibroEntidad.setValue(UIImagePNGRepresentation(portada!), forKey: "portada")
+        }
+        do{
+            try self.contexto?.save()
+        }catch{
+            
+        }
+        
         return true
         
-    }
-    
-    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        return(names.count)
-    }
-    
-    
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-        let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "cell")
-        cell.textLabel?.text = names[indexPath.row]
-        self.names.removeAll()
-        return(cell)
     }
     
     func mostrarAlerta() {
@@ -135,13 +184,13 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+   /* override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         arrayLibros.append(aux)
         var libros: [datosLibro] = []
         libros = self.arrayLibros
         let sigVista = segue.destination as! TVC
         sigVista.coleccionLibros = libros
 
-    }
+    }*/
     
 }

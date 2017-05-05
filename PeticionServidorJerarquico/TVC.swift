@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 struct datosLibro {
     var isbn: String
@@ -25,20 +26,44 @@ struct datosLibro {
 
 class TVC: UITableViewController {
     
-    var coleccionLibros: [datosLibro] = []
-    var aux: datosLibro = datosLibro()
+    /*var coleccionLibros: [datosLibro] = []
+    var aux: datosLibro = datosLibro()*/
+    var contexto: NSManagedObjectContext? = nil
+    
+    var titulos = [String]()
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //Inicializa contexto
+        guard let appDelegate =
+            UIApplication.shared.delegate as? AppDelegate else {
+                return
+        }
+        contexto = appDelegate.persistentContainer.viewContext
 
         let rightAddBarButtonItem: UIBarButtonItem = UIBarButtonItem(title: "+", style: UIBarButtonItemStyle.plain, target: self, action: #selector(TVC.addTapped))
         
         self.navigationItem.setRightBarButtonItems([rightAddBarButtonItem], animated: true)
         
-        print("Array\(coleccionLibros)")
+        //print("Array\(coleccionLibros)")
         
         self.navigationItem.setHidesBackButton(true, animated: false)
+        
+        //---->Cargamos los títulos de los libros anteriormente buscados al abrir la app
+        let libroEntidad = NSEntityDescription.entity(forEntityName: "Libro", in: self.contexto!)
+        let peticion = libroEntidad?.managedObjectModel.fetchRequestTemplate(forName: "petLibros")
+        do{
+            let librosEntidad = try (self.contexto?.fetch(peticion!))! as! [Libro]
+            for libroEntidad2 in librosEntidad{
+                let titulo = libroEntidad2.value(forKey: "titulo") as! String
+                self.titulos.append(titulo)
+            }
+        }catch{
+            
+        }
+
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -69,63 +94,30 @@ class TVC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return (self.coleccionLibros.count)
+        //return (self.coleccionLibros.count)
+        return (self.titulos.count)
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "celda", for: indexPath)
-        cell.textLabel?.text = coleccionLibros[indexPath.row].titulo
+        //cell.textLabel?.text = coleccionLibros[indexPath.row].titulo
+        cell.textLabel?.text = titulos[indexPath.row]
         return cell
     }
     
 
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "show1" {
+        /*if segue.identifier == "show1" {
             var libros: [datosLibro] = []
             libros = self.coleccionLibros
             let sigVista = segue.destination as! ViewController
             sigVista.arrayLibros = libros
             
-        }else if segue.identifier == "show2" {
+        }else*/ if segue.identifier == "show2" {
             let cc = segue.destination as! VistaDetalle
             let ip = self.tableView.indexPathForSelectedRow
-            cc.libro = self.coleccionLibros[ip!.row]
+            cc.libro = self.titulos[ip!.row]
         }
         
     }

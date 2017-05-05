@@ -7,32 +7,57 @@
 //
 
 import UIKit
+import CoreData
 
 class VistaDetalle: UIViewController {
     
-    var libro: datosLibro = datosLibro()
+    var libro: String = ""
 
     @IBOutlet weak var isbn: UILabel!
     @IBOutlet weak var titulo: UILabel!
     @IBOutlet weak var autores: UILabel!
     @IBOutlet weak var portada: UIImageView!
     
-    var nombres: String = ""
+    //var nombres: String = ""
     
+    var contexto: NSManagedObjectContext? = nil
+    var nombre: String = ""
+    var escritores: String = ""
+    var imagen: UIImage? = nil
+    var isbnLibro: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.isbn.text = "ISBN: \(libro.isbn)"
-        self.titulo.text = "Título: \(libro.titulo)"
-        for i in 0 ..< libro.autores.count{
-            if(i == libro.autores.count-1){
-                nombres = nombres + libro.autores[i]
-            }else{
-                nombres = nombres + libro.autores[i] + ", "
-            }
+        
+        //1
+        guard let appDelegate =
+            UIApplication.shared.delegate as? AppDelegate else {
+                return
         }
-        self.autores.text = "Autor/es: \(nombres)"
-        self.portada.image = libro.portada
+        
+        contexto = appDelegate.persistentContainer.viewContext
+        
+        //---->Leer datos de la base de datos
+        let libroEntidad = NSEntityDescription.entity(forEntityName: "Libro", in: self.contexto!)
+        let peticion = libroEntidad?.managedObjectModel.fetchRequestFromTemplate(withName: "petLibroTitulo", substitutionVariables: ["titulo": libro])
+        do{
+            let librosEntidad = try (self.contexto?.fetch(peticion!))! as! [Libro]
+            for libroEntidad2 in librosEntidad{
+                nombre = libroEntidad2.value(forKey: "titulo") as! String
+                isbnLibro = libroEntidad2.value(forKey: "isbn") as! String
+                escritores = libroEntidad2.value(forKey: "autores") as! String
+                if libroEntidad2.value(forKey: "portada") != nil{
+                    imagen = UIImage(data: (libroEntidad2.value(forKey: "portada") as! NSData) as Data)
+                }
+            }
+        }catch{
+        }
+        
+        //Mostrar datos por la app
+        self.isbn.text = "ISBN: \(isbnLibro)"
+        self.titulo.text = "Título: \(nombre)"
+        self.autores.text = "Autor/es: \(escritores)"
+        self.portada.image = imagen
         
         // Do any additional setup after loading the view.
     }
